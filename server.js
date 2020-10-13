@@ -108,7 +108,58 @@ function addDepartment() {
 
 function addRole() {
     console.log("user wants to add a role");
-    mainPrompt();
+    addingRole();
+    function addingRole() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: `role`,
+                message: `What role do you want to add?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    return true;
+                }
+            },
+            {
+                type: "int",
+                name: `salary`,
+                message: `What is the salary for this role?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    return true;
+                }
+            },
+            {
+                type: "int",
+                name: `department_id`,
+                message: `What is the department ID for this role?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    return true;
+                }
+            }
+        ])
+            .then(function (data) {
+                console.log(`the user wants to add: \nrole ${data.role}\nsalary ${data.salary}\ndepartment_id ${data.department_id}`);
+                connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [data.role, data.salary, data.department_id], (err, rows) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('Data added to department Db:');
+                });
+            }).then(function () {
+                viewRoles();
+            })
+    }
 }
 
 function addEmployee() {
@@ -126,7 +177,7 @@ function viewDepartments() {
         console.log(rows);
         mainPrompt();
     });
-    
+
 }
 
 function viewRoles() {
@@ -137,8 +188,9 @@ function viewRoles() {
         }
         console.log('Data received from role Db:');
         console.log(rows);
+        mainPrompt();
     });
-    mainPrompt();
+   
 }
 
 function viewEmployees() {
