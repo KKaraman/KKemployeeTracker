@@ -162,7 +162,7 @@ function addRole() {
                     if (err) {
                         throw err;
                     }
-                    console.log('Data added to department Db:');
+                    console.log('Data added to role Db:');
                 });
             }).then(function () {
                 viewRoles();
@@ -172,7 +172,78 @@ function addRole() {
 
 function addEmployee() {
     console.log("user wants to add an employee");
-    mainPrompt();
+    addingEmployee();
+    function addingEmployee() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: `first_name`,
+                message: `What is the first name of the employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    return true;
+                }
+            },
+            {
+                type: "input",
+                name: `last_name`,
+                message: `What is the last name of the employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    return true;
+                }
+            },
+            {
+                type: "input",
+                name: `role_id`,
+                message: `What is the role_id for this employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if(isNaN(answer)){
+                        return 'You must type a number!';
+                    }else{
+                        return true;
+                    }
+                }
+            },
+            {
+                type: "input",
+                name: `manager_id`,
+                message: `What is the manager ID for this employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if(isNaN(answer)){
+                        return 'You must type a number!';
+                    }else{
+                        return true;
+                    }
+                }
+            }
+        ])
+            .then(function (data) {
+                console.log(`the user wants to add employee: \n ${data.first_name} ${data.last_name}\nrole_ID ${data.role_id}\nmanager_id ${data.manager_id}`);
+                connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [data.first_name, data.last_name, data.role_id, data.manager_id], (err, rows) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('Data added to employee Db:');
+                });
+            }).then(function () {
+                viewEmployees();
+            })
+    }
 }
 
 function viewDepartments() {
