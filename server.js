@@ -124,7 +124,7 @@ function addRole() {
                 }
             },
             {
-                type: "int",
+                type: "input",
                 name: `salary`,
                 message: `What is the salary for this role?`,
                 validate: function (answer) {
@@ -132,11 +132,15 @@ function addRole() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    return true;
+                    if(isNaN(answer)){
+                        return 'You must type a number!';
+                    }else{
+                        return true;
+                    }
                 }
             },
             {
-                type: "int",
+                type: "input",
                 name: `department_id`,
                 message: `What is the department ID for this role?`,
                 validate: function (answer) {
@@ -144,7 +148,11 @@ function addRole() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    return true;
+                    if(isNaN(answer)){
+                        return 'You must type a number!';
+                    }else{
+                        return true;
+                    }
                 }
             }
         ])
