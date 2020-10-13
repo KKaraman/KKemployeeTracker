@@ -78,7 +78,32 @@ function onMainPromptAnswer({ action }) {
 
 function addDepartment() {
     console.log("user wants to add a department");
-    mainPrompt();
+    addingDepartment();
+    function addingDepartment() {
+        inquirer.prompt({
+            type: "input",
+            name: `department`,
+            message: `What department do you want to add?`,
+            validate: function (answer) {
+                if (answer === "") {
+                    return 'You must type something!';
+                }
+                console.log(`\n user typed: ${answer}`);
+                return true;
+            }
+
+        }).then(function (data) {
+            console.log(`user wants to add: ${data.department}`);
+            connection.query("INSERT INTO department (department) VALUES (?)", [data.department], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                console.log('Data added to department Db:');
+            });
+        }).then(function () {
+            viewDepartments();
+        })
+    }
 }
 
 function addRole() {
@@ -93,38 +118,39 @@ function addEmployee() {
 
 function viewDepartments() {
     console.log("user wants to view departments");
-    connection.query('SELECT * FROM department', (err,rows) => {
-    if(err) {
-        throw err;
-    }
-    console.log('Data received from department Db:');
-    console.log(rows);
+    connection.query('SELECT * FROM department', (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Data received from department Db:');
+        console.log(rows);
+        mainPrompt();
     });
-    mainPrompt();
+    
 }
 
-function viewRoles(){
+function viewRoles() {
     console.log("user wants to view roles");
-    connection.query('SELECT * FROM role', (err,rows) => {
-    if(err) {
-        throw err;
-    }
-    console.log('Data received from role Db:');
-    console.log(rows);
+    connection.query('SELECT * FROM role', (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Data received from role Db:');
+        console.log(rows);
     });
     mainPrompt();
 }
 
-function viewEmployees(){
+function viewEmployees() {
     console.log("user wants to view employees");
-    connection.query('SELECT * FROM employee', (err,rows) => {
-    if(err) {
-        throw err;
-    }
-    console.log('Data received from employee Db:');
-    console.log(rows);
+    connection.query('SELECT * FROM employee', (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Data received from employee Db:');
+        console.log(rows);
+        mainPrompt();
     });
-    mainPrompt();
 }
 
 function updateEmployeeRole() {
