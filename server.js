@@ -2,13 +2,16 @@
 const mysql = require("mysql");
 //import the inquirer package
 const inquirer = require("inquirer");
+//password
+require('dotenv').config()
+const sqlPwd = process.env.MYSQL
 
 // Create/define MySQL connection
 const connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'Sarshey080',
+    password: sqlPwd,
     database: 'kk_employee_tracker_db',
 });
 
@@ -34,6 +37,8 @@ function mainPrompt() {
             "View roles",
             "View employees",
             "Update employee role",
+            "Update employee manager",
+            "See employee name, title and salary",
             "Exit"
         ]
     }).then(onMainPromptAnswer);
@@ -67,6 +72,14 @@ function onMainPromptAnswer({ action }) {
 
         case "Update employee role":
             updateEmployeeRole();
+            break;
+
+        case "Update employee manager":
+            updateEmployeeManager();
+            break;
+        
+        case "See employee name, title and salary":
+            seeNameTitleSalary();
             break;
 
         case "Exit":
@@ -132,9 +145,9 @@ function addRole() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    if(isNaN(answer)){
+                    if (isNaN(answer)) {
                         return 'You must type a number!';
-                    }else{
+                    } else {
                         return true;
                     }
                 }
@@ -148,9 +161,9 @@ function addRole() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    if(isNaN(answer)){
+                    if (isNaN(answer)) {
                         return 'You must type a number!';
-                    }else{
+                    } else {
                         return true;
                     }
                 }
@@ -208,9 +221,9 @@ function addEmployee() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    if(isNaN(answer)){
+                    if (isNaN(answer)) {
                         return 'You must type a number!';
-                    }else{
+                    } else {
                         return true;
                     }
                 }
@@ -224,9 +237,9 @@ function addEmployee() {
                         return 'You must type something!';
                     }
                     console.log(`\n user typed: ${answer}`);
-                    if(isNaN(answer)){
+                    if (isNaN(answer)) {
                         return 'You must type a number!';
-                    }else{
+                    } else {
                         return true;
                     }
                 }
@@ -253,7 +266,7 @@ function viewDepartments() {
             throw err;
         }
         console.log('Data received from department Db:');
-        console.log(rows);
+        console.table(rows);
         mainPrompt();
     });
 
@@ -266,10 +279,10 @@ function viewRoles() {
             throw err;
         }
         console.log('Data received from role Db:');
-        console.log(rows);
+        console.table(rows);
         mainPrompt();
     });
-   
+
 }
 
 function viewEmployees() {
@@ -279,12 +292,125 @@ function viewEmployees() {
             throw err;
         }
         console.log('Data received from employee Db:');
-        console.log(rows);
+        console.table(rows);
         mainPrompt();
     });
 }
 
 function updateEmployeeRole() {
     console.log("user wants to update employee role");
-    mainPrompt();
+    updatingEmployeeRole();
+    function updatingEmployeeRole() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: `employee_id`,
+                message: `What is the employee ID that has changed roles?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if (isNaN(answer)) {
+                        return 'You must type a number!';
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            {
+                type: "input",
+                name: `role_id`,
+                message: `What is the new role ID for the employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if (isNaN(answer)) {
+                        return 'You must type a number!';
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        ])
+            .then(function (data) {
+                console.log(`the user wants to update ${data.employee_id}'s role to ${data.role_id}`);
+                // console.log(`UPDATE employee SET manager_id = ${data.manager_id} WHERE id = ${data.employee_id}`);
+                connection.query("UPDATE employee SET role_id = ? WHERE id = ?", [data.role_id, data.employee_id], (err, rows) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('Data added to employee Db:');
+                });
+            }).then(function () {
+                viewEmployees();
+            })
+    }
 }
+
+function updateEmployeeManager() {
+    console.log("user wants to update employee role");
+    updatingEmployeeManager();
+    function updatingEmployeeManager() {
+        inquirer.prompt([
+            {
+                type: "input",
+                name: `employee_id`,
+                message: `What is the employee ID that has changed roles?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if (isNaN(answer)) {
+                        return 'You must type a number!';
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            {
+                type: "input",
+                name: `manager_id`,
+                message: `What is the new manager ID for the employee?`,
+                validate: function (answer) {
+                    if (answer === "") {
+                        return 'You must type something!';
+                    }
+                    console.log(`\n user typed: ${answer}`);
+                    if (isNaN(answer)) {
+                        return 'You must type a number!';
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        ])
+            .then(function (data) {
+                console.log(`the user wants to update ${data.employee_id}'s manager to ${data.manager_id}`);
+                // console.log(`UPDATE employee SET manager_id = ${data.manager_id} WHERE id = ${data.employee_id}`);
+                connection.query("UPDATE employee SET manager_id = ? WHERE id = ?", [data.manager_id, data.employee_id], (err, rows) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('Data added to employee Db:');
+                });
+            }).then(function () {
+                viewEmployees();
+            })
+    }
+}
+
+function seeNameTitleSalary() {
+    console.log("user wants to combine the role and employee tables");
+    connection.query("SELECT first_name, last_name,title, salary FROM employee INNER JOIN role ON employee.role_id=role.id", (err, rows) => { 
+        if (err) {
+            throw err;
+        }
+        console.table(rows);
+        mainPrompt();
+    });
+}
+
